@@ -1,3 +1,6 @@
+def dec_num_to_bin_list(num):
+	return list(bin(num))[2:]
+
 def xor(first_row, second_row):
 	result_row = []
 	for i in range(0, len(first_row)):
@@ -24,21 +27,29 @@ def xor_multiple_rows(matrix):
 	return buffer_row
 
 def first_processing(matrix):
-	colums = len(matrix)
-	arr_rev = 0
+	# Calculation of n, k, r
+	n = len(matrix[0])
+	k = len(matrix)
+	r = n - k
 
-	result_ones_amount = []
+	# Calculation of weight coefficients
+	bin_counter_vec = 0
+
+	w = []
 	for i in range(0, len(matrix[0])):
-		result_ones_amount.append(0)
+		w.append(0)
 	
-	for i in range(0, 2**colums):
-		arr_rev = (list(bin(i))[2:])
-		print(arr_rev, end = '')
-		print((colums - len(arr_rev)) * '     ', end='\t')
+	for i in range(0, 2**k):
+		bin_counter_vec = dec_num_to_bin_list(i)
+
+		for i in range(len(dec_num_to_bin_list(2**k - 1)) - len(bin_counter_vec)):
+			bin_counter_vec.insert(0, '0')
+
+		print(bin_counter_vec, end = '\t')
 		
 		rows_to_xor = []
-		for j in range(0, len(arr_rev)):
-			if arr_rev[j] == '1':
+		for j in range(0, len(bin_counter_vec)):
+			if bin_counter_vec[j] == '1':
 				rows_to_xor.append(matrix[j])
 
 		xor_result = xor_multiple_rows(rows_to_xor)
@@ -49,25 +60,46 @@ def first_processing(matrix):
 			if elem == 1:
 				ones_counter += 1
 
-		print(f'ones: {ones_counter}', end='')
+		print(ones_counter)
 
-		for j in range(0, len(result_ones_amount)):
+		for j in range(0, len(w)):
 			if ones_counter == j:
-				result_ones_amount[j] += 1
+				w[j] += 1
 
-		print()
-
-	print()
-	for i in range(0, len(result_ones_amount)):
-		print(f' num of {i} = {result_ones_amount[i]}')
+	# Calculation d, qo, qi
+	for i, num in enumerate(w[1:]):
+		if num != 0:
+			d = i + 1
+			break
+	qo = d - 1
+	qi = round(qo / 2)
+	
+	# Results
+	print(f'\nn = {n}')
+	print(f'k = {k}')
+	print(f'r = {r}')
+	print(f'd = {d}')
+	print(f'qo = {qo}')
+	print(f'qi = {qi}')
+	print(f'w = {w}')
 		
 if __name__ == '__main__':
-	
-	G = [[0, 0, 0, 1, 1, 0, 1, 1],
-		 [0, 1, 0, 0, 1, 1, 1, 1],
-		 [0, 1, 0, 1, 1, 1, 1, 0],
-		 [0, 1, 1, 1, 1, 0, 0, 0],
-		 [1, 1, 0, 0, 0, 1, 0, 0]]
+
+	G = []
+
+	with open('Data.txt') as file:
+		file_data = file.readlines()
+		counter = 0
+		for i in range(file_data.index('# 1\n') + 1, len(file_data)):
+			current_line = list(file_data[i])
+			G.append([])
+			for j in range(0, len(current_line)):
+				if j % 2 == 0:
+					G[counter].append(int(current_line[j]))
+			counter += 1
+		
+	for item in G:
+		print(item)
+	print()
 			
 	first_processing(G)
-	
