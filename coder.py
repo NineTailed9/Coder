@@ -62,10 +62,11 @@ def recursive_vertor_division_shanfano(vector):
     
     return sum_1 + sum_2
 
-def shannon_fano(vector, sys_base = 3):
+def shannon_fano(vector):
     vector.sort()
     vector.reverse()
-
+    vector_len = len(vector)
+	
     vector_new = []
     for i in range(0, len(vector)):
         vector_new.append([vector[i], i])
@@ -77,12 +78,16 @@ def shannon_fano(vector, sys_base = 3):
         bin_code_comb.append([])
 
     recursive_vertor_division_shanfano(vector)
-
+	
+    avg_len = 0
     for i in range(0, len(bin_code_comb)):
         bin_code_comb[i] = bin_code_comb[i][::-1]
+        avg_len += len(bin_code_comb[i])
+
         print(vector[i][0], bin_code_comb[i])
-        
-def huffman(vector, sys_base = 3):
+    return (avg_len/len(vector))
+	
+def huffman(vector):
     vector_prim = vector.copy()
     vector.sort()
     vector.reverse()
@@ -158,9 +163,14 @@ def huffman(vector, sys_base = 3):
         bin_code_comb[i] = bin_code_comb[i][::-1]
         avg_len += len(bin_code_comb[i])
         print(vector_prim[i], bin_code_comb[i])
-    print('Average word lentgh is ', round((avg_len/len(vector_prim)), 3))
+    return (avg_len/len(vector_prim))
 
 def first_processing(matrix):
+	print('Task 1')
+	print('Matrix G')
+	for item in matrix:
+		print(item)
+	print()
 	# Calculation of n, k, r
 	n = len(matrix[0])
 	k = len(matrix)
@@ -217,12 +227,16 @@ def first_processing(matrix):
 	print(f'qi = {qi}')
 	print(f'w = {w}')
 
-def second_processing(vector):
+def fifth_processing(vector, sistem_base = 3):
+	print('\nTask 5')
+	print('Vector', vector)
+	print('Standart code R =', round(log(len(vector), sistem_base), 2))
+
 	print('Huffman code')
-	huffman(vector)
+	print('R =', round(huffman(vector), 2))
 	
-	print('Shannon-Fano code')
-	shannon_fano(vector)
+	print('\nShannon-Fano code')
+	print('R =', round(shannon_fano(vector), 2))
 
 	# TODO: Repeat actions with combining two by two
 
@@ -233,7 +247,7 @@ if __name__ == '__main__':
 	with open('Data.txt') as file:
 		file_data = file.readlines()
 		counter = 0
-		for i in range(file_data.index('# 1\n') + 1, file_data.index('# 2\n')):
+		for i in range(file_data.index('# 1\n') + 1, file_data.index('# 5\n')):
 			current_line = list(file_data[i])
 			G.append([])
 			for j in range(0, len(current_line)):
@@ -241,14 +255,12 @@ if __name__ == '__main__':
 					G[counter].append(int(current_line[j]))
 			counter += 1
         
-		for i in range(file_data.index('# 2\n') + 1, len(file_data)):
-			current_line = list(file_data[i])
-			print(current_line)
+		vector_tsk_5 = ''
+		for i in range(file_data.index('# 5\n') + 1, len(file_data)):
+			current_line = file_data[i]
+			vector_tsk_5 = current_line.split()
+			for j in range(0, len(vector_tsk_5)):
+				vector_tsk_5[j] = float(vector_tsk_5[j])
 
-			# TODO: Added a partially completed second task
-
-	for item in G:
-		print(item)
-	print()
-
-	#first_processing(G)
+	first_processing(G)
+	fifth_processing(vector_tsk_5, 2)
