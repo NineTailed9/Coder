@@ -1,4 +1,5 @@
 from math import log, factorial
+from copy import deepcopy
 
 # Global var init
 bin_code_comb = []
@@ -67,7 +68,8 @@ def recursive_vertor_division_shanfano(vector):
     return sum_1 + sum_2
 
 
-def shannon_fano(vector):
+def shannon_fano(vector_prim):
+    vector = deepcopy(vector_prim)
     vector.sort()
     vector.reverse()
     vector_len = len(vector)
@@ -93,8 +95,8 @@ def shannon_fano(vector):
     return avg_len / len(vector)
 
 
-def huffman(vector):
-    vector_prim = vector.copy()
+def huffman(vector_prim):
+    vector = deepcopy(vector_prim)
     vector.sort()
     vector.reverse()
 
@@ -172,11 +174,14 @@ def huffman(vector):
             bin_code_comb[minimal_1[1]].append(0)
             bin_code_comb[minimal_2[1]].append(1)
 
+    vector_prim_sorted = deepcopy(vector_prim)
+    vector_prim_sorted.sort()
+    vector_prim_sorted.reverse()
     avg_len = 0
     for i in range(0, len(bin_code_comb)):
         bin_code_comb[i] = bin_code_comb[i][::-1]
         avg_len += len(bin_code_comb[i])
-        print(vector_prim[i], bin_code_comb[i])
+        print(vector_prim_sorted[i], bin_code_comb[i])
     return avg_len / len(vector_prim)
 
 
@@ -301,7 +306,7 @@ def seventh_processing(vector: list, system_base=3):
     print("R =", round(shannon_fano(vector), 2))
 
     counter = 0
-    while counter < len(vector):
+    while counter < len(vector) - 1:
         vector[counter] = round(vector[counter] + vector[counter + 1], 2)
         vector.pop(counter + 1)
         counter += 1
@@ -351,4 +356,4 @@ if __name__ == "__main__":
     first_processing(G)
     fourth_processing(n_tsk_4, k_tsk_4, p_tsk_4)
     # fourth_processing(24, 13, 0.071964)
-    seventh_processing(vector_tsk_7, 2)
+    seventh_processing(vector_tsk_7, 3)
