@@ -1,191 +1,7 @@
-from math import log, factorial
-from copy import deepcopy
-
-# Global var init
-bin_code_comb = []
+from matrix_operations import *
 
 
-def dec_num_to_bin_list(num):
-    return list(bin(num))[2:]
-
-
-def xor(first_row, second_row):
-    result_row = []
-    for i in range(0, len(first_row)):
-        if first_row[i] == second_row[i]:
-            result_row.append(0)
-        else:
-            result_row.append(1)
-
-    return result_row
-
-
-def xor_multiple_rows(matrix):
-    if len(matrix) == 0:
-        return [0]
-    if len(matrix) == 1:
-        return matrix[0]
-
-    buffer_row = []
-    for i in range(0, len(matrix[0])):
-        buffer_row.append(0)
-
-    for i in range(0, len(matrix)):
-        buffer_row = xor(buffer_row, matrix[i])
-
-    return buffer_row
-
-
-def recursive_vertor_division_shanfano(vector):
-    if len(vector) == 1:
-        return vector
-
-    counter = 0
-    sum_elems = 0
-    sum_1 = 0
-    sum_2 = 0
-    vector_match = 0
-
-    for i in range(0, len(vector)):
-        vector_match = vector_match + vector[i][0]
-    vector_match /= 2
-
-    while True:
-        sum_elems += vector[counter][0]
-
-        if sum_elems >= vector_match:
-            sum_1 = recursive_vertor_division_shanfano(vector[: counter + 1])
-            sum_2 = recursive_vertor_division_shanfano(vector[counter + 1 :])
-            break
-
-        counter += 1
-
-    for item in sum_1:
-        bin_code_comb[item[1]].append(1)
-    for item in sum_2:
-        bin_code_comb[item[1]].append(0)
-
-    return sum_1 + sum_2
-
-
-def shannon_fano(vector_prim):
-    vector = deepcopy(vector_prim)
-    vector.sort()
-    vector.reverse()
-    vector_len = len(vector)
-
-    vector_new = []
-    for i in range(0, len(vector)):
-        vector_new.append([vector[i], i])
-    vector = vector_new
-
-    global bin_code_comb
-    bin_code_comb = []
-    for i in range(len(vector)):
-        bin_code_comb.append([])
-
-    recursive_vertor_division_shanfano(vector)
-
-    avg_len = 0
-    for i in range(0, len(bin_code_comb)):
-        bin_code_comb[i] = bin_code_comb[i][::-1]
-        avg_len += len(bin_code_comb[i])
-
-        print(vector[i][0], bin_code_comb[i])
-    return avg_len / len(vector)
-
-
-def huffman(vector_prim):
-    vector = deepcopy(vector_prim)
-    vector.sort()
-    vector.reverse()
-
-    vector_new = []
-    for i in range(0, len(vector)):
-        vector_new.append([vector[i], i])
-    vector = vector_new
-
-    global bin_code_comb
-    bin_code_comb = []
-    for i in range(len(vector)):
-        bin_code_comb.append([])
-
-    minimal_1 = []
-    minimal_1_index = 0
-    minimal_2 = []
-    minimal_2_index = 0
-    while len(vector) != 1:
-        minimal_1 = [2, 0]
-        minimal_1_index = 1000
-        minimal_2 = [2, 0]
-        minimal_2_index = 1000
-
-        for i in range(0, len(vector)):
-            if vector[i][0] < minimal_1[0]:
-                minimal_1 = vector[i]
-                minimal_1_index = i
-        vector.pop(minimal_1_index)
-
-        for i in range(0, len(vector)):
-            if vector[i][0] < minimal_2[0]:
-                minimal_2 = vector[i]
-                minimal_2_index = i
-        vector.pop(minimal_2_index)
-
-        if minimal_1[0] == minimal_2[0]:
-            minimal_1, minimal_2 = minimal_2, minimal_1
-
-        min_1_type = type(minimal_1[1])
-        min_2_type = type(minimal_2[1])
-
-        if isinstance(minimal_1[1], list) and isinstance(minimal_2[1], list):
-            vector.append(
-                [round(minimal_1[0] + minimal_2[0], 2), minimal_1[1] + minimal_2[1]]
-            )
-
-            for item in minimal_1[1]:
-                bin_code_comb[item].append(0)
-            for item in minimal_2[1]:
-                bin_code_comb[item].append(1)
-
-        if isinstance(minimal_1[1], list) and isinstance(minimal_2[1], int):
-            vector.append(
-                [round(minimal_1[0] + minimal_2[0], 2), minimal_1[1] + [minimal_2[1]]]
-            )
-
-            for item in minimal_1[1]:
-                bin_code_comb[item].append(0)
-            bin_code_comb[minimal_2[1]].append(1)
-
-        if isinstance(minimal_1[1], int) and isinstance(minimal_2[1], list):
-            vector.append(
-                [round(minimal_1[0] + minimal_2[0], 2), [minimal_1[1]] + minimal_2[1]]
-            )
-
-            bin_code_comb[minimal_1[1]].append(0)
-            for item in minimal_2[1]:
-                bin_code_comb[item].append(1)
-
-        if isinstance(minimal_1[1], int) and isinstance(minimal_2[1], int):
-            vector.append(
-                [round(minimal_1[0] + minimal_2[0], 2), [minimal_1[1]] + [minimal_2[1]]]
-            )
-
-            bin_code_comb[minimal_1[1]].append(0)
-            bin_code_comb[minimal_2[1]].append(1)
-
-    vector_prim_sorted = deepcopy(vector_prim)
-    vector_prim_sorted.sort()
-    vector_prim_sorted.reverse()
-    avg_len = 0
-    for i in range(0, len(bin_code_comb)):
-        bin_code_comb[i] = bin_code_comb[i][::-1]
-        avg_len += len(bin_code_comb[i])
-        print(vector_prim_sorted[i], bin_code_comb[i])
-    return avg_len / len(vector_prim)
-
-
-def first_processing(matrix):
+def Task_1(matrix):
     print("-" * 40)
     print("Task 1")
     print("Matrix G")
@@ -239,17 +55,90 @@ def first_processing(matrix):
     qo = d - 1
     qi = round(qo / 2)
 
+    # w alt
+    w_dict = {}
+    for index, elem in enumerate(w):
+        if elem != 0:
+            w_dict[index] = elem
+
     # Results
     print(f"\nn = {n}")
     print(f"k = {k}")
-    print(f"r = {r}")
-    print(f"d = {d}")
-    print(f"qo = {qo}")
-    print(f"qi = {qi}")
+    print(f"r = n - k = {r}")
+    print(f"d = min w = {d}")
+    print(f"qo = d - 1 = {qo}")
+    print(f"qi = (d - 1) / 2 = {qi}")
     print(f"w = {w}")
+    print(f"w = {w_dict}")
 
 
-def fourth_processing(n, k, p, system_base=2):
+def Task_2(primary_matrix: list, operations_to_solve=10):
+    print("\n" + "-" * 40)
+    print("\nTask 2\nMatrix G")
+
+    matrix_print(primary_matrix)
+
+    matrix = deepcopy(primary_matrix)
+
+    columns = len(matrix[0])
+    rows = len(matrix)
+
+    if get_single_num_columns_index(matrix)[0] < rows:
+        print("Matrix does not have enough columnns with single 1")
+        matrix = matrix_to_single_num_columns(matrix, operations_to_solve)
+        print("New matrix")
+        matrix_print(matrix)
+    else:
+        print("Matrix have enough columnns with single 1\n")
+
+    matrix_with_ones = deepcopy(matrix)
+
+    matrix = matrix_to_unit_matrix(matrix)
+    print("G sist [IQ]")
+    matrix_print(matrix)
+
+    p = matrix_columns_swap_index(matrix_with_ones, matrix)
+
+    print("Pi")
+    for swap in p:
+        print(swap[0] + 1, end=" ")
+    print()
+    for swap in p:
+        print(swap[1] + 1, end=" ")
+
+    I = div_matrix_in_two(matrix, div_index=rows - 1)[0]
+    Q = div_matrix_in_two(matrix, div_index=rows - 1)[1]
+
+    print("\n\nQ transposed")
+    matrix_print(matrix_transpose(Q))
+
+    print("H sist [Q^T, I]")
+    H_sist = join_matrix_in_one(matrix_transpose(Q), I)
+    matrix_print(H_sist)
+
+    p_inverted = sorted(p, key=lambda x: x[1])
+    for elem in range(0, len(p_inverted)):
+        p_inverted[elem][0], p_inverted[elem][1] = (
+            p_inverted[elem][1],
+            p_inverted[elem][0],
+        )
+
+    print("Pi^-1")
+    for swap in p_inverted:
+        print(swap[0] + 1, end=" ")
+    print()
+    for swap in p_inverted:
+        print(swap[1] + 1, end=" ")
+
+    H = matrix_columns_swap_by_list(H_sist, p_inverted)
+    print("\n\nH")
+    matrix_print(H)
+
+    print("Checking the calculated matrix H, by H*G transposed")
+    matrix_print(matrix_accuracy_HG(H, primary_matrix, print_messages=True))
+
+
+def Task_4(n, k, p, system_base=2):
     print("\n" + "-" * 40)
     print("Task 4")
     print(f"n = {n}")
@@ -259,9 +148,10 @@ def fourth_processing(n, k, p, system_base=2):
     r = n - k
     print(f"\n2**r = {system_base**r}")
     N_sindr = (system_base**r) - 1
-    print(f"N sindr = {N_sindr}\n")
+    print(f"N sindr = 2**r - 1 = {N_sindr}\n")
 
     # q max calculation
+    print("qi, is max value at which sum(Cqn) is lower or equal then 2**r")
     qi = 1
     prev_sum = 0
     while True:
@@ -269,12 +159,12 @@ def fourth_processing(n, k, p, system_base=2):
         summ = 0
         for q in range(1, qi + 1):
             summ += (factorial(n)) / (factorial(q) * factorial(n - q))
-        print(f"if qi = {qi}, then sum[Cqn] = {summ}")
+        print(f"if qi = {qi}, then sum(Cqn) = {summ}")
         if summ > N_sindr:
             qi -= 1
-            print(f"\nsum[Cqn] bigger than 2^r - 1")
+            print(f"\nsum(Cqn) now bigger than 2^r - 1")
             print(f"{summ} > {N_sindr}")
-            print(f"then 1 step back, qi = {qi}, sum[Cqn] = {prev_sum}")
+            print(f"then 1 step back. qi = {qi}, sum(Cqn) = {prev_sum}")
             break
         qi += 1
         prev_sum = summ
@@ -293,31 +183,38 @@ def fourth_processing(n, k, p, system_base=2):
     print(f"P bit dec = {summ*((dk)/(n))}")
 
 
-def seventh_processing(vector: list, system_base=3):
+def Task_7(vector: list, system_base=3):
     print("\n" + "-" * 40)
     print("Task 7")
     print("Vector", vector)
-    print("Standart code R =", round(log(len(vector), system_base), 2))
+    print(
+        f"Standart code R = log({system_base}){len(vector)} = ",
+        round(log(len(vector), system_base), 2),
+    )
 
     print("\nHuffman code")
-    print("R =", round(huffman(vector), 2))
+    print("R = avg bit len =", round(huffman(vector), 2))
 
     print("\nShannon-Fano code")
-    print("R =", round(shannon_fano(vector), 2))
+    print("R = avg bit len =", round(shannon_fano(vector), 2))
 
-    counter = 0
-    while counter < len(vector) - 1:
-        vector[counter] = round(vector[counter] + vector[counter + 1], 2)
-        vector.pop(counter + 1)
-        counter += 1
+    print("\nVector P(X) turns into vector P(XX)")
+    new_vector = []
+    for p_i in vector:
+        for p_j in vector:
+            new_vector.append(round(p_i * p_j, 3))
 
-    print("\nNew vector", vector)
-    print("Standart code R =", round(log(len(vector), system_base), 2))
+    print("\nNew vector", new_vector)
+    print(
+        f"Standart code R = log({system_base}){len(new_vector)} = ",
+        round(log(len(new_vector), system_base), 2),
+    )
+
     print("\nHuffman code")
-    print("R =", round(huffman(vector), 2))
+    print("R = avg bit len =", round(huffman(new_vector), 2))
 
     print("\nShannon-Fano code")
-    print("R =", round(shannon_fano(vector), 2))
+    print("R = avg bit len =", round(shannon_fano(new_vector), 2))
 
 
 if __name__ == "__main__":
@@ -326,14 +223,25 @@ if __name__ == "__main__":
         file_data = file.readlines()
 
         # Read task 1
-        G = []
+        G_1 = []
         counter = 0
-        for i in range(file_data.index("# 1\n") + 1, file_data.index("# 4\n")):
+        for i in range(file_data.index("# 1\n") + 1, file_data.index("# 2\n")):
             current_line = list(file_data[i])
-            G.append([])
+            G_1.append([])
             for j in range(0, len(current_line)):
                 if j % 2 == 0:
-                    G[counter].append(int(current_line[j]))
+                    G_1[counter].append(int(current_line[j]))
+            counter += 1
+
+        # Read task 2
+        G_2 = []
+        counter = 0
+        for i in range(file_data.index("# 2\n") + 1, file_data.index("# 4\n")):
+            current_line = list(file_data[i])
+            G_2.append([])
+            for j in range(0, len(current_line)):
+                if j % 2 == 0:
+                    G_2[counter].append(int(current_line[j]))
             counter += 1
 
         # Read task 4
@@ -353,7 +261,7 @@ if __name__ == "__main__":
             for j in range(0, len(vector_tsk_7)):
                 vector_tsk_7[j] = float(vector_tsk_7[j])
 
-    first_processing(G)
-    fourth_processing(n_tsk_4, k_tsk_4, p_tsk_4)
-    # fourth_processing(24, 13, 0.071964)
-    seventh_processing(vector_tsk_7, 3)
+    Task_1(G_1)
+    Task_2(G_2, 4)
+    Task_4(n_tsk_4, k_tsk_4, p_tsk_4)
+    Task_7(vector_tsk_7, 3)
