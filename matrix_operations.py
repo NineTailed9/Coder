@@ -108,6 +108,15 @@ def join_matrix_in_one(first_matrix: list, second_matrix: list):
                 second_matrix[len(second_matrix) - 1].append(0)
             second_matrix[len(second_matrix) - 1].append(1)
         columns_second = len(second_matrix[0])
+    if columns_second > rows_first:
+        second_matrix = deepcopy(second_matrix)
+
+        for row_index in range(0, rows_second):
+            second_matrix[row_index].pop()
+        second_matrix.pop()
+
+        rows_second = len(second_matrix)
+        columns_second = len(second_matrix[0])
 
     combined_matrix = []
     for row_index in range(0, rows_first):
